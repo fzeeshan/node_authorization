@@ -92,32 +92,6 @@ pub fn local_testnet_config() -> Result<ChainSpec, String> {
 }
 
 /// Configure initial storage state for FRAME modules.
-//Old code
-/*
-fn testnet_genesis(
-	initial_authorities: Vec<(AuraId, GrandpaId)>,
-	root_key: AccountId,
-	endowed_accounts: Vec<AccountId>,
-	_enable_println: bool,
-) -> serde_json::Value {
-	serde_json::json!({
-		"balances": {
-			// Configure endowed accounts with initial balance of 1 << 60.
-			"balances": endowed_accounts.iter().cloned().map(|k| (k, 1u64 << 60)).collect::<Vec<_>>(),
-		},
-		"aura": {
-			"authorities": initial_authorities.iter().map(|x| (x.0.clone())).collect::<Vec<_>>(),
-		},
-		"grandpa": {
-			"authorities": initial_authorities.iter().map(|x| (x.1.clone(), 1)).collect::<Vec<_>>(),
-		},
-		"sudo": {
-			// Assign network admin rights.
-			"key": Some(root_key),
-		},
-	})
-}
-*/
 //New code
 use sp_core::OpaquePeerId;
 use node_template_runtime::NodeAuthorizationConfig;
@@ -131,13 +105,6 @@ fn testnet_genesis(
     use serde_json::json;
 
     // Define the NodeAuthorizationConfig
-  //  #[derive(Serialize)]
- /* //commenting below because it's not needed.
-    struct NodeAuthorization {
-        pub peer_id: OpaquePeerId,
-        pub account_id: AccountId,
-    }
-*/
     //trying new suggestion
  let node_authorization_config = NodeAuthorizationConfig {
     nodes: vec![
@@ -151,21 +118,6 @@ fn testnet_genesis(
         ),
     ],
 };
-/*
-    // Construct the NodeAuthorizationConfig (this errors out)
-    let node_authorization_config = NodeAuthorizationConfig {
-        nodes: vec![
-            NodeAuthorization {
-                peer_id: OpaquePeerId(bs58::decode("12D3KooWBmAwcd4PJNJvfV89HwE48nwkRmAgo8Vy3uQEyNNHBox2").into_vec().unwrap()),
-                account_id: endowed_accounts[0].clone(),
-            },
-            NodeAuthorization {
-                peer_id: OpaquePeerId(bs58::decode("12D3KooWQYV9dGMFoRzNStwpXztXaBUjtPqi6aU76ZgUriHhKust").into_vec().unwrap()),
-                account_id: endowed_accounts[1].clone(),
-            },
-        ],
-    };
-*/
     // Serialize NodeAuthorizationConfig into JSON
     let node_authorization_json = serde_json::to_value(&node_authorization_config).unwrap();
 
@@ -186,7 +138,6 @@ fn testnet_genesis(
             "key": Some(root_key),
         },
         "nodeAuthorization": node_authorization_json, // new code try
-        //"node_authorization": node_authorization_json, // Include the NodeAuthorizationConfig JSON here old code
     });
 
     genesis_config
